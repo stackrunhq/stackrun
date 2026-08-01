@@ -1,0 +1,24 @@
+{
+  "name": "stackrunapp",
+  "productName": "StackRun Platform",
+  "version": "1.0.0",
+  "description": "StackRun Platform Electron Application",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron --no-sandbox --disable-gpu-sandbox .",
+    "build": "electron-builder --linux",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "stackrun",
+    "electron",
+    "wine"
+  ],
+  "author": "栈行平台",
+  "license": "MIT",
+  "devDependencies": {
+    "asarmor": "^3.0.2",
+    "electron": "30.5.1",
+    "electron-builder": "^24.13.3"
+  }
+}

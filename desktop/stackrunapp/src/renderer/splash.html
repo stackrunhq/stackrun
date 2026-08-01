@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="app.title">栈行平台 - 启动中</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 480px;
+      height: 280px;
+      overflow: hidden;
+      background-color: transparent;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #181D27;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .logo-icon {
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+      }
+    }
+
+    .title {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    .progress-container {
+      width: 80%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .status-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+    }
+
+    .error-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 77, 79, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .error-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: #ff4d4f;
+    }
+
+    .error-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .error-message {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .error-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loadingContainer">
+    <div class="logo">
+      <div class="logo-circle">
+        <span class="logo-icon">SR</span>
+      </div>
+    </div>
+    <div class="title">StackRun</div>
+    <div class="subtitle" id="statusText" data-i18n="splash.startingApp">正在启动应用...</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="status-text" id="detailText"></div>
+  </div>
+
+  <div class="error-state" id="errorContainer">
+    <div class="error-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    </div>
+    <div class="error-title" data-i18n="splash.connectionFailed">连接失败</div>
+    <div class="error-message" data-i18n="splash.cannotConnectBackend">无法连接到 StackRun 后端服务</div>
+    <div class="error-buttons">
+      <button class="btn btn-primary" onclick="retryConnection()" data-i18n="common.retry">重试</button>
+      <button class="btn btn-secondary" onclick="closeApp()" data-i18n="common.close">关闭</button>
+    </div>
+  </div>
+
+  <script>
+    const statusText = document.getElementById('statusText');
+    const progressBar = document.getElementById('progressBar');
+    const detailText = document.getElementById('detailText');
+    const loadingContainer = document.getElementById('loadingContainer');
+    const errorContainer = document.getElementById('errorContainer');
+
+    window.electronAPI.receive('splash:setAppName', (appName) => {
+      const tpl = (typeof statusText.getAttribute('data-i18n-starting') === 'string')
+        ? statusText.getAttribute('data-i18n-starting')
+        : '正在启动 {appName}...';
+      statusText.textContent = tpl.replace('{appName}', appName);
+    });
+
+    window.electronAPI.receive('event:task.progress', (data) => {
+      if (!data) return;
+      let taskData = data;
+      if (Array.isArray(data) && data.length > 0) {
+        taskData = data[0];
+      }
+      if (taskData.progress !== undefined) {
+        progressBar.style.width = `${taskData.progress}%`;
+      }
+      if (taskData.message) {
+        detailText.textContent = taskData.message;
+      }
+    });
+
+    window.electronAPI.receive('dserver:progress', (data) => {
+      if (!data) return;
+      const pct = data.percentage !== undefined ? data.percentage
+                : data.progress !== undefined ? data.progress
+                : undefined;
+      if (pct !== undefined) {
+        progressBar.style.width = `${pct}%`;
+      }
+      if (data.message) {
+        detailText.textContent = data.message;
+      }
+    });
+
+    window.electronAPI.receive('splash:setDetail', (detail) => {
+      if (typeof detail === 'string') {
+        detailText.textContent = detail;
+      } else if (detail && detail.message) {
+        detailText.textContent = detail.message;
+      }
+    });
+
+    window.electronAPI.receive('dserver:log', (data) => {
+      console.log('[Splash] Log:', data);
+    });
+
+    window.electronAPI.receive('dserver:connection-failed', () => {
+      loadingContainer.style.display = 'none';
+      errorContainer.style.display = 'flex';
+    });
+
+    function retryConnection() {
+      loadingContainer.style.display = 'flex';
+      errorContainer.style.display = 'none';
+      progressBar.style.width = '0%';
+      detailText.textContent = '';
+      window.electronAPI.send('splash:retry');
+    }
+
+    function closeApp() {
+      window.electronAPI.send('splash:close');
+    }
+  </script>
+</body>
+</html>

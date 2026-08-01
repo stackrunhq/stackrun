@@ -1,0 +1,39 @@
+appId: com.stackrun.app
+productName: 栈行平台
+copyright: Copyright © 2024 栈行平台
+
+directories:
+  output: dist
+  buildResources: build
+
+afterPack: build/afterPack.js
+
+files:
+  - src/**
+  - package.json
+
+asar: true
+
+linux:
+  target:
+    - AppImage
+    - tar.gz
+  category: Utility
+  icon: assets/images/app_icon.png
+  executableName: stackrunapp
+
+win:
+  target:
+    - nsis
+  icon: assets/images/logo.png
+
+mac:
+  target:
+    - dmg
+  icon: assets/images/logo.png
+  category: public.app-category.utilities
+
+extraResources:
+  - assets/**
+
+compression: normal
